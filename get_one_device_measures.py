@@ -2,6 +2,7 @@ import pandas as pd
 import requests
 import datetime as dt
 import sys
+import argparse
 
 
 def request_device(device_id: str, start_date: str, end_date: str) -> pd.DataFrame:
@@ -23,10 +24,13 @@ def request_device(device_id: str, start_date: str, end_date: str) -> pd.DataFra
 
 
 def main():
-    device = sys.argv[1]
-    start_date = sys.argv[2]
-    end_date = sys.argv[3]
-    df = request_device(device, start_date, end_date)
+    parser = argparse.ArgumentParser(prog="Bike Data Request", description="Request data from one device")
+    parser.add_argument("device", help="Select one device in this list : https://data.mobility.brussels/bike/api/counts/?request=devices&outputFormat=csv")
+    parser.add_argument("start_date", help="Format : YYYYMMDD")
+    parser.add_argument("end_date", help="Format : YYYYMMDD")
+    args = parser.parse_args()
+
+    df = request_device(args.device, args.start_date, args.end_date)
     print(df)
 
 
