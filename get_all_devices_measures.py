@@ -15,12 +15,15 @@ for i in range(response.json()["totalFeatures"]):
 def request_all_devices(start_date: str, end_date: str) -> pd.DataFrame:
     """
     Request all bike data from all devices from "https://data.mobility.brussels/bike/api/counts"
-    Args:
-        start_date (str): Data's starting date. Format : YYYYMMDD
-        end_date (str): Data's ending date. Format : YYYYMMDD
 
-    Returns:
-        Pandas dataframe containing all data requested
+    Parameters
+    ----------
+    start_date : Data's starting date. Format : YYYYMMDD
+    end_date : Data's ending date. Format : YYYYMMDD
+
+    Returns
+    -------
+    Pandas dataframe containing all data requested
     """
     all_devices_df = pd.DataFrame()
     for device in devices_list:
@@ -31,7 +34,7 @@ def request_all_devices(start_date: str, end_date: str) -> pd.DataFrame:
 
 
 def main():
-    parser = argparse.ArgumentParser(prog="Bike Data Request", description="Request data from one device")
+    parser = argparse.ArgumentParser(prog="Bike Data Request", description="Request data from all devices")
     parser.add_argument("start_date", help="Format : YYYYMMDD")
     parser.add_argument("end_date", help="Format : YYYYMMDD")
     args = parser.parse_args()
