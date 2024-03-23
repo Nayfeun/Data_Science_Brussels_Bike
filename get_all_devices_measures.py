@@ -2,6 +2,7 @@ import pandas as pd
 import requests
 from get_one_device_measures import request_device
 import argparse
+from pathlib import Path
 
 url = "https://data.mobility.brussels/bike/api/counts/?request=devices&outputFormat=json"
 response = requests.get(url)
@@ -39,7 +40,8 @@ def main():
     parser.add_argument("end_date", help="Format : YYYYMMDD")
     args = parser.parse_args()
     df = request_all_devices(args.start_date, args.end_date)
-    print(df)
+    path = Path(f"data/ALL_DEVICES_{args.start_date}_{args.end_date}.parquet")
+    df.to_parquet(path)
 
 
 if __name__ == "__main__":

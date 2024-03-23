@@ -6,7 +6,7 @@ from get_one_device_measures import request_device
 import argparse
 
 
-def add_time_series_from_time_gap(df: pd.DataFrame) -> pd.DataFrame:
+def time_stamp_to_time_gap(df: pd.DataFrame) -> pd.DataFrame:
     """
     Add a time series column corresponding to time gap from https://data.mobility.brussels/bike/api/counts/?request=time_gaps
     Parameters
@@ -15,15 +15,15 @@ def add_time_series_from_time_gap(df: pd.DataFrame) -> pd.DataFrame:
 
     Returns
     -------
-    Dataframe with "time_series" column
+    Dataframe with "timestamp" column
     """
-    url = "https://data.mobility.brussels/bike/api/counts/?request=time_gaps&outputFormat=json"
-    response = requests.get(url)
-    response.json()
-    time_series = []
-    for value in df["time_gap"]:
-        time_series.append(response.json()["data"][str(value)]["start_time"][:-3])
-    df["time_series"] = pd.Series(time_series)
+    df["timestamp_minutes"] = (df["time_gap"] - 1) * 15
+    df["timestamp_hours"] = df["timestamp_minutes"] // 60
+    df["timestamp_minutes"] = df["timestamp_minutes"] % 60
+    df["timestamp"] = df["count_date"] + "-" + df["timestamp_hours"].astype(str) + ":" + df["timestamp_minutes"].astype(
+        str)
+    df["timestamp"] = pd.to_datetime(df["timestamp"], format="%Y/%m/%d-%H:%M")
+    print(df)
     return df
 
 
@@ -42,10 +42,10 @@ def display_time_series_one_device(device_id: str, start_date: str, end_date: st
     Line plot displaying time series from one device
     """
     df = request_device(device_id, start_date, end_date)
-    df = add_time_series_from_time_gap(df)
+    df = time_stamp_to_time_gap(df)
 
-    sns.lineplot(df, x="time_series", y="count")
-    plt.xlabel("Time Series")
+    sns.lineplot(df, x="timestamp", y="count")
+    plt.xlabel("Timestamp")
     plt.ylabel("Counts")
     plt.title(f"Bike Time Series for Device {device_id}")
     plt.show()
